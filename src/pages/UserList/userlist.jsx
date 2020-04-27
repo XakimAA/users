@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from "react-router-dom";
-import { Grid, TextField } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { Grid, TextField, FormControl } from '@material-ui/core';
 import { Table, Button } from 'xsolla-uikit';
 import Pagination from 'xsolla-uikit/lib/pagination'; //отсутствует в общем списке
 
@@ -54,11 +54,9 @@ const UserList = (props) => {
 
   const handlerSubmitClick = (event) => {
     event.preventDefault();
-    service.addUser(userParams)
-    .then(()=>{
-      setCurrentPage(Math.floor((recordsTotal + 1)/perPage)+1);
-    })
-    
+    service.addUser(userParams).then(() => {
+      setCurrentPage(Math.floor((recordsTotal + 1) / perPage) + 1);
+    });
   };
 
   const handlerTableClick = (param) => {
@@ -67,36 +65,48 @@ const UserList = (props) => {
   };
 
   return (
-    <div >
-      <form style={{ padding: 20 }} onSubmit={handlerSubmitClick}>
-        <TextField
-          id="user_id"
-          label="ID"
-          variant="outlined"
-          onChange={handlerOnChange('user_id')}
-        />
-        <TextField
-          id="user_name"
-          label="Имя пользователя"
-          variant="outlined"
-          onChange={handlerOnChange('user_name')}
-        />
-        <TextField
-          id="user_custom"
-          label="Полное имя"
-          variant="outlined"
-          onChange={handlerOnChange('user_custom')}
-        />
-        <TextField
-          id="email"
-          label="E-mail"
-          variant="outlined"
-          onChange={handlerOnChange('email')}
-        />
-      <Button type="submit" appearance="secondary">
-        Добавить
-      </Button>
-      </form>
+    <div>
+      <FormControl style={{ padding: 20 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={2}>
+            <TextField
+              id="user_id"
+              label="ID"
+              variant="outlined"
+              onChange={handlerOnChange('user_id')}
+            />
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <TextField
+              id="user_name"
+              label="Имя пользователя"
+              variant="outlined"
+              onChange={handlerOnChange('user_name')}
+            />
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <TextField
+              id="user_custom"
+              label="Полное имя"
+              variant="outlined"
+              onChange={handlerOnChange('user_custom')}
+            />
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <TextField
+              id="email"
+              label="E-mail"
+              variant="outlined"
+              onChange={handlerOnChange('email')}
+            />
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Button type="submit" appearance="secondary" onClick={handlerSubmitClick}>
+              Добавить
+            </Button>
+          </Grid>
+        </Grid>
+      </FormControl>
       <Pagination
         current={currentPage}
         total={recordsTotal}
@@ -113,18 +123,22 @@ const UserList = (props) => {
         tableClassName="user-table"
         renderEmptyMessage={() => <div>Нет данных</div>}
         renderRow={(data) => (
-          <tr className={data.className} key={data.row.user_id} onDoubleClick={handlerTableClick.bind(null,data.row.user_id)}>
-            {data.columns.map((column, index) => 
+          <tr
+            className={data.className}
+            key={data.row.user_id}
+            onDoubleClick={handlerTableClick.bind(null, data.row.user_id)}
+          >
+            {data.columns.map((column, index) => (
               <data.CellComponent
-              key={index}
-              column={column}
-              row={data.row}
-              rowIndex={data.rowIndex}
-              columnIndex={index}
-            >
-              {data.row[column.fieldGetter]}
-            </data.CellComponent>
-            )}
+                key={index}
+                column={column}
+                row={data.row}
+                rowIndex={data.rowIndex}
+                columnIndex={index}
+              >
+                {data.row[column.fieldGetter]}
+              </data.CellComponent>
+            ))}
           </tr>
         )}
       />

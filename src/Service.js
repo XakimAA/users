@@ -7,4 +7,9 @@ export class Service {
   addUser(user) {
     return axios.post(`${axios.defaults.baseURL}/users`, user);
   }
+
+  getUserInfo(userID){
+    return axios.get(`${axios.defaults.baseURL}/users/${userID}`);
+  }
 }
+

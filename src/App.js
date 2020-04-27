@@ -15,7 +15,7 @@ function App() {
     <Router>
     <div className="App">
       <Switch>
-          <Route path="/usercard">
+          <Route path="/usercard/:id">
             <UserCard />
           </Route>
           <Route path="/">
