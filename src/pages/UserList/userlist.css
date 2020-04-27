@@ -1,0 +1,10 @@
+.pagination {
+    margin-bottom: 10px;
+}
+.table-wrapper{
+    border: thin solid #c5d0db;
+}
+
+.user-table{
+    width: 99%;
+}
