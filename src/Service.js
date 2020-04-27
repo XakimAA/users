@@ -4,4 +4,7 @@ export class Service {
     const offset = (page-1)*size;
     return axios.get(`${axios.defaults.baseURL}/users?offset=${offset}&limit=${size}`);
   }
+  addUser(user) {
+    return axios.post(`${axios.defaults.baseURL}/users`, user);
+  }
 }

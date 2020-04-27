@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Grid,TextField } from '@material-ui/core';
-import { Table,Button } from 'xsolla-uikit';
+import { useHistory } from "react-router-dom";
+import { Grid, TextField } from '@material-ui/core';
+import { Table, Button } from 'xsolla-uikit';
 import Pagination from 'xsolla-uikit/lib/pagination'; //отсутствует в общем списке
 
 import './userlist.css';
@@ -13,25 +14,21 @@ const UserList = (props) => {
       id: 'user_id',
       name: 'ID',
       fieldGetter: 'user_id',
-      width: '10%',
     },
     {
       id: 'user_name',
       name: 'Имя пользователя',
       fieldGetter: 'user_name',
-      width: '30%',
     },
     {
       id: 'user_custom',
       name: 'Полное имя',
       fieldGetter: 'user_custom',
-      width: '30%',
     },
     {
       id: 'email',
       name: 'E-mail',
       fieldGetter: 'email',
-      width: '30%',
     },
   ];
 
@@ -39,7 +36,8 @@ const UserList = (props) => {
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [searchParams, setSearchParams] = useState({});
+  const [userParams, setUserParams] = useState({});
+  const history = useHistory();
 
   useEffect(() => {
     service.getUsers(currentPage, perPage).then((items) => {
@@ -51,25 +49,54 @@ const UserList = (props) => {
   }, [currentPage]);
 
   const handlerOnChange = (inputID) => (event) => {
-    setSearchParams({ ...searchParams, [inputID]: event.target.value });
+    setUserParams({ ...userParams, [inputID]: event.target.value });
   };
 
   const handlerSubmitClick = (event) => {
     event.preventDefault();
-    console.log(searchParams);
+    service.addUser(userParams)
+    .then(()=>{
+      setCurrentPage(Math.floor((recordsTotal + 1)/perPage)+1);
+    })
+    
+  };
+
+  const handlerTableClick = (param) => {
+    console.log(param);
+    history.push(`/usercard/${param}`);
   };
 
   return (
-    <div>
-      <form style={{ padding: 20}} onSubmit={handlerSubmitClick}>
-        <TextField id="user_id" label="ID" variant="outlined" onChange={handlerOnChange("user_id")}/>
-        <TextField id="user_name" label="Имя пользователя" variant="outlined" onChange={handlerOnChange("user_name")} />
-        <TextField id="user_custom" label="Полное имя" variant="outlined" onChange={handlerOnChange("user_custom")}/>
-        <TextField id="email" label="E-mail" variant="outlined" onChange={handlerOnChange("email")}/>
-        <Button type="submit" appearance="secondary">Найти</Button>
+    <div >
+      <form style={{ padding: 20 }} onSubmit={handlerSubmitClick}>
+        <TextField
+          id="user_id"
+          label="ID"
+          variant="outlined"
+          onChange={handlerOnChange('user_id')}
+        />
+        <TextField
+          id="user_name"
+          label="Имя пользователя"
+          variant="outlined"
+          onChange={handlerOnChange('user_name')}
+        />
+        <TextField
+          id="user_custom"
+          label="Полное имя"
+          variant="outlined"
+          onChange={handlerOnChange('user_custom')}
+        />
+        <TextField
+          id="email"
+          label="E-mail"
+          variant="outlined"
+          onChange={handlerOnChange('email')}
+        />
+      <Button type="submit" appearance="secondary">
+        Добавить
+      </Button>
       </form>
-      <Button type="button" appearance="secondary">Добавить</Button>
-      <Button type="button" appearance="secondary">Редактировать</Button>
       <Pagination
         current={currentPage}
         total={recordsTotal}
@@ -84,29 +111,25 @@ const UserList = (props) => {
         compact={true}
         className="table-wrapper"
         tableClassName="user-table"
+        renderEmptyMessage={() => <div>Нет данных</div>}
+        renderRow={(data) => (
+          <tr className={data.className} key={data.row.user_id} onDoubleClick={handlerTableClick.bind(null,data.row.user_id)}>
+            {data.columns.map((column, index) => 
+              <data.CellComponent
+              key={index}
+              column={column}
+              row={data.row}
+              rowIndex={data.rowIndex}
+              columnIndex={index}
+            >
+              {data.row[column.fieldGetter]}
+            </data.CellComponent>
+            )}
+          </tr>
+        )}
       />
     </div>
   );
 };
 
 export default UserList;
-
-{
-  /* <div style={{ padding: 20}}>
-<Grid container spacing={4}>
-  {users.map((user) => (
-    <Grid container item xs={12} md={6} key={user.user_id}>
-      <Card style={{ height:"unset"}}>
-        {() => (
-          <> 
-            <Head appearance="separated">{user.user_name || ''}</Head>
-            <FormGroup indentation="sm">user_custom</FormGroup>
-            <FormGroup indentation="sm">email</FormGroup>
-          </>
-        )}
-      </Card>
-    </Grid>
-  ))}
-</Grid>
-</div> */
-}
