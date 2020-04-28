@@ -8,3 +8,7 @@
 .user-table{
     width: 99%;
 }
+
+.xsui-table-cell {
+    padding: unset
+}

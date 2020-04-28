@@ -50,6 +50,7 @@ const UserCard = (props) => {
   const [transactions, setTransactions] = useState([]);
   const [addTransactionLoad, setAddTransactionLoad] = useState(false);
   const [errorText, setErrorText] = useState('');
+
   useEffect(() => {
     const getUserInfo = service.getUserInfo(id).then((user) => {
       setValues(user.data);
@@ -60,7 +61,7 @@ const UserCard = (props) => {
       return data;
     });
     Promise.all([getUserInfo, getTransactions]).then((values) => {
-      setUserNotFound(values[0].data.http_status_code === 404)
+      setUserNotFound(values[0].data.http_status_code === 404);
       setloadingPage(false);
     });
   }, []);
@@ -71,7 +72,6 @@ const UserCard = (props) => {
   };
 
   const handlerSubmitClick = (event) => {
-    // event.preventDefault();
     setErrorText('');
     setLoadSave(true);
     service
@@ -97,7 +97,7 @@ const UserCard = (props) => {
             !!answer.data.extended_message.property_errors
           )
             error +=
-              'Неверно заполнено поле:' +
+              'Неверно заполнено поле:' +   
               Object.keys(answer.data.extended_message.property_errors).reduce((str, current) => {
                 setErrorFields({ ...errorFields, [current]: true });
                 return str + ' ' + current + '\n';
@@ -151,10 +151,8 @@ const UserCard = (props) => {
   return (
     <div style={{ padding: '20px' }}>
       {loadingPage && <Loader color="blue" fullscreen={true} centered={true} />}
-      {!loadingPage && userNotFound && (
-        <div>Пользователя с таким id не существует</div>
-      )}
-      {!loadingPage && !userNotFound &&(
+      {!loadingPage && userNotFound && <div>Пользователя с таким id не существует</div>}
+      {!loadingPage && !userNotFound && (
         <>
           <Paper style={{ padding: '20px', marginBottom: '20px' }}>
             <Typography component="p" align="left" style={{ marginBottom: '20px' }}>

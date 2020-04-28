@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, FormControl } from '@material-ui/core';
-import { Table, Button } from 'xsolla-uikit';
+import { Grid, TextField, FormControl, Paper, Typography } from '@material-ui/core';
+import { Table, Button, Collapse } from 'xsolla-uikit';
 import Pagination from 'xsolla-uikit/lib/pagination'; //отсутствует в общем списке
 
 import './userlist.css';
@@ -32,12 +32,21 @@ const columns = [
 ];
 
 const UserList = (props) => {
+  const history = useHistory();
   const [users, setUsers] = useState([]);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [userParams, setUserParams] = useState({});
-  const history = useHistory();
+  const [loadAdd, setLoadAdd] = useState(false);
+  const [errorText, setErrorText] = useState('');
+
+  const [errorFields, setErrorFields] = useState({
+    user_id: false,
+    user_name: false,
+    user_custom: false,
+    email: false,
+  });
 
   useEffect(() => {
     service.getUsers(currentPage, perPage).then((items) => {
@@ -50,13 +59,58 @@ const UserList = (props) => {
 
   const handlerOnChange = (inputID) => (event) => {
     setUserParams({ ...userParams, [inputID]: event.target.value });
+    setErrorFields({ ...errorFields, [inputID]: false });
   };
 
   const handlerSubmitClick = (event) => {
-    event.preventDefault();
-    service.addUser(userParams).then(() => {
-      setCurrentPage(Math.floor((recordsTotal + 1) / perPage) + 1);
-    });
+    setErrorText('');
+    setLoadAdd(true);
+    service
+      .addUser(userParams)
+      .then((answer) => {
+        if (answer.statusText === 'OK' && answer.status === 200) {
+          let error = '';
+          if (
+            !!answer.data &&
+            !!answer.data.extended_message &&
+            !!answer.data.extended_message.global_errors &&
+            answer.data.extended_message.global_errors.length > 0
+          )
+            error = answer.data.extended_message.global_errors.reduce(
+              (str, current) => str + ' ' + current + '\n',
+              0
+            );
+
+          if (
+            !!answer.data &&
+            !!answer.data.extended_message &&
+            !!answer.data.extended_message.property_errors
+          )
+            error +=
+              'Ошибка:' +
+              Object.keys(answer.data.extended_message.property_errors).reduce((str, current) => {
+                setErrorFields({ ...errorFields, [current]: true });
+                console.log(current);
+                return str + ' ' + current + '\n';
+              }, '');
+
+          if (!!answer.data && !!answer.data.message) error += answer.data.message;
+
+          if (error === '') {
+            setCurrentPage(Math.floor((recordsTotal + 1) / perPage) + 1);
+            console.log('добавлен');
+          } else {
+            setErrorText(error);
+            console.log('ошибка', error);
+          }
+        } else {
+          console.log('ошибка', answer);
+        }
+        setLoadAdd(false);
+      })
+      .catch(() => {
+        setLoadAdd(false);
+      });
   };
 
   const handlerTableClick = (param) => {
@@ -65,81 +119,128 @@ const UserList = (props) => {
   };
 
   return (
-    <div>
-      <FormControl style={{ padding: 20 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={2}>
-            <TextField
-              id="user_id"
-              label="ID"
-              variant="outlined"
-              onChange={handlerOnChange('user_id')}
-            />
+    <div style={{ padding: '20px' }}>
+      <Paper style={{ padding: '20px', marginBottom: '20px' }}>
+        <Collapse
+          isOpened={false}
+          staticElements={1}
+          collapsedLabel={() => 'Ввести данные'}
+          expandedLabel={() => 'Спрятать'}
+        >
+          <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
+            Добавление пользователя
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth>
+                <TextField
+                  id="user_id"
+                  label="ID"
+                  variant="outlined"
+                  error={errorFields.user_id}
+                  onChange={handlerOnChange('user_id')}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <TextField
+                  id="user_name"
+                  label="Имя пользователя"
+                  variant="outlined"
+                  error={errorFields.user_name}
+                  onChange={handlerOnChange('user_name')}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <TextField
+                  id="user_custom"
+                  label="Полное имя"
+                  variant="outlined"
+                  error={errorFields.user_custom}
+                  onChange={handlerOnChange('user_custom')}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth>
+                <TextField
+                  id="email"
+                  label="E-mail"
+                  variant="outlined"
+                  error={errorFields.email}
+                  onChange={handlerOnChange('email')}
+                />
+              </FormControl>
+            </Grid>
+            {errorText && (
+              <Grid item xs={12} md={10}>
+                <FormControl fullWidth>
+                  <Typography component="p" align="left" style={{ color: '#ff0000' }}>
+                    {errorText}
+                  </Typography>
+                </FormControl>
+              </Grid>
+            )}
+            <Grid item xs={12} md={2} align="right">
+              <Button
+                type="submit"
+                appearance="secondary"
+                onClick={handlerSubmitClick}
+                style={{ height: '100%' }}
+                fetching={loadAdd}
+              >
+                Добавить
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={2}>
-            <TextField
-              id="user_name"
-              label="Имя пользователя"
-              variant="outlined"
-              onChange={handlerOnChange('user_name')}
+        </Collapse>
+      </Paper>
+
+      <Paper>
+        <Typography component="p" align="left" style={{ padding: '20px' }}>
+          Все пользователи
+        </Typography>
+        <Grid container>
+          <Grid item xs={12} style={{ marginBottom: '10px', paddingLeft: '20px' }}>
+            <Pagination
+              current={currentPage}
+              total={recordsTotal}
+              perPage={perPage}
+              onChangePage={setCurrentPage}
+              className="pagin"
+              size="sm"
             />
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <TextField
-              id="user_custom"
-              label="Полное имя"
-              variant="outlined"
-              onChange={handlerOnChange('user_custom')}
-            />
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <TextField
-              id="email"
-              label="E-mail"
-              variant="outlined"
-              onChange={handlerOnChange('email')}
-            />
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <Button type="submit" appearance="secondary" onClick={handlerSubmitClick}>
-              Добавить
-            </Button>
           </Grid>
         </Grid>
-      </FormControl>
-      <Pagination
-        current={currentPage}
-        total={recordsTotal}
-        perPage={perPage}
-        onChangePage={setCurrentPage}
-        className="pagin"
-        size="sm"
-      />
-      <Table
-        columns={columns}
-        rows={users}
-        compact={true}
-        className="table-wrapper"
-        tableClassName="user-table"
-        renderEmptyMessage={() => <div>Нет данных</div>}
-        renderRow={(data) => (
-          <tr
-            className={data.className}
-            key={data.row.user_id}
-            onDoubleClick={handlerTableClick.bind(null, data.row.user_id)}
-          >
-            {data.columns.map((column, index) => (
-              <data.CellComponent
-                key={index}
-                column={column}
-                row={data.row}
-                rowIndex={data.rowIndex}
-                columnIndex={index}
-              />
-            ))}
-          </tr>
-        )}
-      />
+        <Table
+          columns={columns}
+          rows={users}
+          compact={true}
+          className="table-wrapper"
+          tableClassName="user-table"
+          renderEmptyMessage={() => <div>Нет данных</div>}
+          renderRow={(data) => (
+            <tr
+              className={data.className}
+              key={data.row.user_id}
+              onDoubleClick={handlerTableClick.bind(null, data.row.user_id)}
+            >
+              {data.columns.map((column, index) => (
+                <data.CellComponent
+                  key={index}
+                  column={column}
+                  row={data.row}
+                  rowIndex={data.rowIndex}
+                  columnIndex={index}
+                />
+              ))}
+            </tr>
+          )}
+        />
+      </Paper>
     </div>
   );
 };
