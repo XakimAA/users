@@ -43,7 +43,7 @@ const UserCard = (props) => {
     wallet_currency: '',
     enabled: true,
   });
-
+  const [loadSave, setLoadSave] = useState(false);
   useEffect(() => {
     service.getUserInfo(id).then((user) => {
       setValues(user.data);
@@ -54,14 +54,33 @@ const UserCard = (props) => {
     setValues({ ...values, [inputID]: event.target.value });
   };
 
+  const handlerSubmitClick = (event) => {
+    event.preventDefault();
+    setLoadSave(true);
+    service
+      .updateUser(values)
+      .then((answer) => {
+        setLoadSave(false);
+        if (!answer.data && answer.statusText === 'OK' && answer.status === 200) {
+          console.log('добавлен');
+        } else {
+          console.log('ошибка', answer);
+        }
+      })
+      .catch((data) => {
+        setLoadSave(false);
+        console.log('произошла ошибка', data);
+      });
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <Paper style={{ padding: '20px' }}>
-        <Typography component="p" align="left" style={{"margin-bottom": "20px" }}>
-          Информация о пользователе   
+        <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
+          Информация о пользователе
         </Typography>
 
-        <Grid container spacing={2} xs={8} justify="center">
+        <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -70,6 +89,7 @@ const UserCard = (props) => {
                 variant="outlined"
                 onChange={handlerOnChange('user_id')}
                 value={values.user_id}
+                disabled
               />
             </FormControl>
           </Grid>
@@ -112,10 +132,9 @@ const UserCard = (props) => {
                 id="register_date"
                 label="Дата регистрации"
                 variant="outlined"
-                value={ moment(values.register_date).format('DD.MM.YYYY')}
+                value={moment(values.register_date).format('DD.MM.YYYY')}
                 disabled
               />
-              
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -150,6 +169,16 @@ const UserCard = (props) => {
                 disabled
               />
             </FormControl>
+          </Grid>
+          <Grid item xs={12} align="right">
+            <Button
+              type="submit"
+              appearance="secondary"
+              onClick={handlerSubmitClick}
+              fetching={loadSave}
+            >
+              Изменить
+            </Button>
           </Grid>
         </Grid>
       </Paper>
