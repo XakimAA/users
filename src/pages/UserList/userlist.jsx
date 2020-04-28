@@ -63,6 +63,7 @@ const UserList = (props) => {
   };
 
   const handlerSubmitClick = (event) => {
+    event.preventDefault();
     setErrorText('');
     setLoadAdd(true);
     service
@@ -91,7 +92,7 @@ const UserList = (props) => {
               Object.keys(answer.data.extended_message.property_errors).reduce((str, current) => {
                 setErrorFields({ ...errorFields, [current]: true });
                 console.log(current);
-                return str + ' ' + current + '\n';
+                return str + ' ' + current + '.' +  answer.data.extended_message.property_errors[current] + '\n';
               }, '');
 
           if (!!answer.data && !!answer.data.message) error += answer.data.message;
@@ -130,6 +131,7 @@ const UserList = (props) => {
           <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
             Добавление пользователя
           </Typography>
+          <form onSubmit={handlerSubmitClick}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={2}>
               <FormControl fullWidth>
@@ -139,6 +141,7 @@ const UserList = (props) => {
                   variant="outlined"
                   error={errorFields.user_id}
                   onChange={handlerOnChange('user_id')}
+                  required
                 />
               </FormControl>
             </Grid>
@@ -188,7 +191,6 @@ const UserList = (props) => {
               <Button
                 type="submit"
                 appearance="secondary"
-                onClick={handlerSubmitClick}
                 style={{ height: '100%' }}
                 fetching={loadAdd}
               >
@@ -196,6 +198,7 @@ const UserList = (props) => {
               </Button>
             </Grid>
           </Grid>
+          </form>
         </Collapse>
       </Paper>
 
@@ -224,6 +227,7 @@ const UserList = (props) => {
           renderEmptyMessage={() => <div>Нет данных</div>}
           renderRow={(data) => (
             <tr
+              title="Двойнок клик: редактирование пользователя и просмотр операций"
               className={data.className}
               key={data.row.user_id}
               onDoubleClick={handlerTableClick.bind(null, data.row.user_id)}

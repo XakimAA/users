@@ -12,3 +12,7 @@
 .xsui-table-cell {
     padding: unset
 }
+
+.xsui-table-rows__row {
+    cursor: pointer;
+}

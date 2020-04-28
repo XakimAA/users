@@ -123,6 +123,7 @@ const UserCard = (props) => {
   };
 
   const handlerAddTransation = (event) => {
+    event.preventDefault();
     setAddTransactionLoad(true);
     service
       .addTransaction(transactionInfo)
@@ -281,6 +282,7 @@ const UserCard = (props) => {
               <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
                 Добавить операцию
               </Typography>
+              <form onSubmit={handlerAddTransation}>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={5}>
                   <FormControl fullWidth>
@@ -291,6 +293,7 @@ const UserCard = (props) => {
                       onChange={handlerOnChangeTransaction('amount')}
                       value={transactionInfo.amount}
                       type="number"
+                      required
                     />
                   </FormControl>
                 </Grid>
@@ -302,6 +305,7 @@ const UserCard = (props) => {
                       variant="outlined"
                       onChange={handlerOnChangeTransaction('comment')}
                       value={transactionInfo.comment}
+                      required
                     />
                   </FormControl>
                 </Grid>
@@ -309,14 +313,14 @@ const UserCard = (props) => {
                   <Button
                     type="submit"
                     appearance="secondary"
-                    onClick={handlerAddTransation}
                     fetching={addTransactionLoad}
                     style={{ height: '100%' }}
                   >
-                    +
+                    Добавить
                   </Button>
                 </Grid>
               </Grid>
+              </form>
             </Collapse>
           </Paper>
           <Paper style={{ marginBottom: '20px' }}>
