@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
-import { Table, Button } from 'xsolla-uikit';
+import { Table, Button, Collapse } from 'xsolla-uikit';
 import moment from 'moment';
-import Moment from 'react-moment';
 
 import { Service } from '../../Service';
 const service = new Service();
@@ -32,8 +31,16 @@ const UserCard = (props) => {
     wallet_currency: '',
     enabled: true,
   });
+
+  const [transactionInfo, setTransactionInfo] = useState({
+    user_id: id,
+    amount: '',
+    comment: '',
+  });
+
   const [loadSave, setLoadSave] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [addTransactionLoad, setAddTransactionLoad] = useState(false);
   useEffect(() => {
     service.getUserInfo(id).then((user) => {
       setValues(user.data);
@@ -62,6 +69,31 @@ const UserCard = (props) => {
       })
       .catch((data) => {
         setLoadSave(false);
+        console.log('произошла ошибка', data);
+      });
+  };
+
+  const handlerOnChangeTransaction = (inputID) => (event) => {
+    setTransactionInfo({ ...transactionInfo, [inputID]: event.target.value });
+  };
+
+  const handlerAddTransation = (event) => {
+    setAddTransactionLoad(true);
+    service
+      .addTransaction(transactionInfo)
+      .then((answer) => {
+        setAddTransactionLoad(false);
+        if (!!answer.data && !answer.data.message && answer.statusText === 'OK' && answer.status === 200) {
+          console.log('добавлен');
+          service.getTransactions(id).then(({ data }) => {
+            setTransactions(data);
+          });
+        } else {
+          console.log('ошибка', answer);
+        }
+      })
+      .catch((data) => {
+        setAddTransactionLoad(false);
         console.log('произошла ошибка', data);
       });
   };
@@ -175,7 +207,54 @@ const UserCard = (props) => {
           </Grid>
         </Grid>
       </Paper>
-
+      <Paper style={{ padding: '20px', marginBottom: '20px' }}>
+        <Collapse
+          isOpened={false}
+          staticElements={1}
+          collapsedLabel={() => `Ввести данные`}
+          expandedLabel={() => 'Спрятать'}
+        >
+          <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
+            Добавить операцию
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={5}>
+              <FormControl fullWidth>
+                <TextField
+                  id="amount"
+                  label="Сумма"
+                  variant="outlined"
+                  onChange={handlerOnChangeTransaction('amount')}
+                  value={transactionInfo.amount}
+                  type="number"
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={5}>
+              <FormControl fullWidth>
+                <TextField
+                  id="comment"
+                  label="Комментарий"
+                  variant="outlined"
+                  onChange={handlerOnChangeTransaction('comment')}
+                  value={transactionInfo.comment}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2} align="right">
+              <Button
+                type="submit"
+                appearance="secondary"
+                onClick={handlerAddTransation}
+                fetching={addTransactionLoad}
+                style={{ height: '100%' }}
+              >
+                +
+              </Button>
+            </Grid>
+          </Grid>
+        </Collapse>
+      </Paper>
       <Table
         columns={columns}
         rows={transactions}
