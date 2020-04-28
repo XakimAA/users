@@ -8,30 +8,30 @@ import './userlist.css';
 import { Service } from '../../Service';
 const service = new Service();
 
-const UserList = (props) => {
-  const columns = [
-    {
-      id: 'user_id',
-      name: 'ID',
-      fieldGetter: 'user_id',
-    },
-    {
-      id: 'user_name',
-      name: 'Имя пользователя',
-      fieldGetter: 'user_name',
-    },
-    {
-      id: 'user_custom',
-      name: 'Полное имя',
-      fieldGetter: 'user_custom',
-    },
-    {
-      id: 'email',
-      name: 'E-mail',
-      fieldGetter: 'email',
-    },
-  ];
+const columns = [
+  {
+    id: 'user_id',
+    name: 'ID',
+    fieldGetter: 'user_id',
+  },
+  {
+    id: 'user_name',
+    name: 'Имя пользователя',
+    fieldGetter: 'user_name',
+  },
+  {
+    id: 'user_custom',
+    name: 'Полное имя',
+    fieldGetter: 'user_custom',
+  },
+  {
+    id: 'email',
+    name: 'E-mail',
+    fieldGetter: 'email',
+  },
+];
 
+const UserList = (props) => {
   const [users, setUsers] = useState([]);
   const [recordsTotal, setRecordsTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,9 +135,7 @@ const UserList = (props) => {
                 row={data.row}
                 rowIndex={data.rowIndex}
                 columnIndex={index}
-              >
-                {data.row[column.fieldGetter]}
-              </data.CellComponent>
+              />
             ))}
           </tr>
         )}

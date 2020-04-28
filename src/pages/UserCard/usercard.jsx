@@ -1,36 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
 import { Table, Button } from 'xsolla-uikit';
 import moment from 'moment';
+import Moment from 'react-moment';
 
 import { Service } from '../../Service';
 const service = new Service();
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    margin: 'auto',
-    maxWidth: 500,
-  },
-  image: {
-    width: 128,
-    height: 128,
-  },
-  img: {
-    margin: 'auto',
-    display: 'block',
-    maxWidth: '100%',
-    maxHeight: '100%',
-  },
-}));
+const columns = [
+  // { id: 'operation_id', name: 'ID операции', fieldGetter: 'operation_id' },
+  { id: 'date', name: 'дата', fieldGetter: 'date' },
+  { id: 'transaction_type', name: 'тип транзакции', fieldGetter: 'transaction_type' },
+  { id: 'amount', name: 'сумма операции', fieldGetter: 'amount' },
+  { id: 'user_balance', name: 'баланс', fieldGetter: 'user_balance' },
+  { id: 'currency', name: 'валюта', fieldGetter: 'currency' },
+  { id: 'comment', name: 'комментарий', fieldGetter: 'comment' },
+  { id: 'status', name: 'статус', fieldGetter: 'status' },
+];
 
 const UserCard = (props) => {
-  const classes = useStyles();
   let { id } = useParams();
   const [values, setValues] = useState({
     user_id: '',
@@ -44,9 +33,13 @@ const UserCard = (props) => {
     enabled: true,
   });
   const [loadSave, setLoadSave] = useState(false);
+  const [transactions, setTransactions] = useState([]);
   useEffect(() => {
     service.getUserInfo(id).then((user) => {
       setValues(user.data);
+    });
+    service.getTransactions(id).then(({ data }) => {
+      setTransactions(data);
     });
   }, []);
 
@@ -75,7 +68,7 @@ const UserCard = (props) => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <Paper style={{ padding: '20px' }}>
+      <Paper style={{ padding: '20px', marginBottom: '20px' }}>
         <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
           Информация о пользователе
         </Typography>
@@ -182,6 +175,31 @@ const UserCard = (props) => {
           </Grid>
         </Grid>
       </Paper>
+
+      <Table
+        columns={columns}
+        rows={transactions}
+        compact={true}
+        className="table-wrapper"
+        tableClassName="user-table"
+        renderEmptyMessage={() => <div>Нет данных</div>}
+        renderRow={(data) => {
+          data.row['date'] = moment(data.row['date']).format('DD.MM.YYYY');
+          return (
+            <tr className={data.className} key={data.row.operation_id}>
+              {data.columns.map((column, index) => (
+                <data.CellComponent
+                  key={index}
+                  column={column}
+                  row={data.row}
+                  rowIndex={data.rowIndex}
+                  columnIndex={index}
+                />
+              ))}
+            </tr>
+          );
+        }}
+      />
     </div>
   );
 };
