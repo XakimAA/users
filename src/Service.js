@@ -1,8 +1,11 @@
 import { default as axios } from './axios';
 export class Service {
-  getUsers(page, size) {
+  getUsers({ user_requisites, email, size }, page) {
     const offset = (page - 1) * size;
-    return axios.get(`${axios.defaults.baseURL}/users?offset=${offset}&limit=${size}`);
+    const haveEmail = email ? `&email=${email}` : ''; 
+    return axios.get(
+      `${axios.defaults.baseURL}/users?user_requisites=${user_requisites}&offset=${offset}&limit=${size}${haveEmail}`
+    );
   }
 
   addUser(user) {

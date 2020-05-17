@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
 import { Button, Collapse } from 'xsolla-uikit';
-import moment from 'moment';
 
 import { Service } from '../../Service';
 const service = new Service();
@@ -10,7 +9,7 @@ const UserCard = ({ isAdding, user }) => {
   const formTitle = isAdding ? "Добавление пользователя" : "Информация о пользователе";
   const collapsePanelText = isAdding ? "Ввести данные" : "Показать";
   const actionButtonText = isAdding ? "Добавить" : "Изменить";
-  
+
   const [values, setValues] = useState({
     user_id: '',
     user_name: '',
@@ -51,7 +50,6 @@ const UserCard = ({ isAdding, user }) => {
       .then((answer) => processAnswer(answer))
       .catch((data) => {
         setLoadButton(false);
-        console.log('произошла ошибка', data);
       });
       
   };
@@ -163,7 +161,7 @@ const UserCard = ({ isAdding, user }) => {
               id="register_date"
               label="Дата регистрации"
               variant="outlined"
-              value={moment(values.register_date).format('DD.MM.YYYY')}
+              value={new Date(values.register_date).toLocaleDateString("ru-RU")}
               disabled
             />
           </FormControl>

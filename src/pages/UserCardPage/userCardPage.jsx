@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
 import { Table, Button, Collapse, Loader } from 'xsolla-uikit';
-import moment from 'moment';
 
 import UserCard from '../../components/UserCard/userCard';
 import { Service } from '../../Service';
@@ -151,7 +150,7 @@ const UserCardPage = (props) => {
               tableClassName="user-table"
               renderEmptyMessage={() => <div>Нет данных</div>}
               renderRow={(data) => {
-                data.row['date'] = moment(data.row['date']).format('DD.MM.YYYY');
+                data.row['date'] = new Date(data.row['date']).toLocaleDateString("ru-RU");
                 return (
                   <tr className={data.className} key={data.row.operation_id}>
                     {data.columns.map((column, index) => (
