@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 
 
-import UserCard from './pages/UserCard';
+import UserCardPage from './pages/UserCardPage';
 import UserList from './pages/UserList';
 
 function App() {
@@ -16,9 +16,9 @@ function App() {
     <div className="App">
       <Switch>
           <Route path="/usercard/:id">
-            <UserCard />
+            <UserCardPage />
           </Route>
-          <Route path="/">
+          <Route path="/users">
             <UserList/>
           </Route>
         </Switch>
