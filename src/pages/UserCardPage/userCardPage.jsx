@@ -46,7 +46,7 @@ const UserCardPage = (props) => {
       setUserNotFound(values[0].data.http_status_code === 404);
       setloadingPage(false);
     });
-  }, []);
+  }, [id]);
 
 
   const handlerOnChangeTransaction = (inputID) => (event) => {

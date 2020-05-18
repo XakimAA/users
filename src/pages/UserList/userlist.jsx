@@ -14,7 +14,8 @@ const columns = [
     id: 'rowIndex',
     name: '№',
     fieldGetter: 'rowIndex',
-  },{
+  },
+  {
     id: 'register_date',
     name: 'Дата регистрации',
     fieldGetter: 'register_date',
@@ -23,19 +24,19 @@ const columns = [
     id: 'user_id',
     name: 'ID',
     fieldGetter: 'user_id',
-    maxWidth: 150
+    maxWidth: 150,
   },
   {
     id: 'user_name',
     name: 'Имя пользователя',
     fieldGetter: 'user_name',
-    maxWidth:150
+    maxWidth: 150,
   },
   {
     id: 'balance',
     name: 'Баланс',
     fieldGetter: 'balance',
-    maxWidth:150
+    maxWidth: 150,
   },
   {
     id: 'email',
@@ -152,6 +153,7 @@ const UserList = (props) => {
               style={{ height: '100%' }}
               onClick={handlerSearchClick}
               disabled={errorEmail}
+              fetching={loadSearching}  
             >
               Поиск
             </Button>
@@ -184,7 +186,9 @@ const UserList = (props) => {
           renderEmptyMessage={() => <div>Нет данных</div>}
           renderRow={(data) => {
             data.row.rowIndex = data.rowIndex + 1;
-            data.row['register_date'] = new Date(data.row['register_date']).toLocaleDateString("ru-RU");
+            data.row['register_date'] = new Date(data.row['register_date']).toLocaleDateString(
+              'ru-RU'
+            );
             return (
               <tr
                 title="Двойнок клик: редактирование пользователя и просмотр операций"
