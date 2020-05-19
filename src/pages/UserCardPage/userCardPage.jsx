@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
 import { Table, Button, Collapse, Loader } from 'xsolla-uikit';
 
 import UserCard from '../../components/UserCard/userCard';
+import Notification from '../../components/Notification/notification';
 import { Service } from '../../Service';
 const service = new Service();
 
 const columns = [
+  { id: 'operation_id', name: 'ID', fieldGetter: 'operation_id' },
   { id: 'date', name: 'дата', fieldGetter: 'date' },
   { id: 'transaction_type', name: 'тип транзакции', fieldGetter: 'transaction_type' },
   { id: 'amount', name: 'сумма операции', fieldGetter: 'amount' },
   { id: 'user_balance', name: 'баланс', fieldGetter: 'user_balance' },
   { id: 'currency', name: 'валюта', fieldGetter: 'currency' },
-  { id: 'comment', name: 'комментарий', fieldGetter: 'comment' },
+  { id: 'comment', name: 'комментарий', fieldGetter: 'comment', maxWidth: 150 },
   { id: 'status', name: 'статус', fieldGetter: 'status' },
 ];
 
@@ -32,29 +34,36 @@ const UserCardPage = (props) => {
   const [userNotFound, setUserNotFound] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [addTransactionLoad, setAddTransactionLoad] = useState(false);
+  const [errorAmount, setErrorAmount] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
 
   useEffect(() => {
-    const getUserInfo = service.getUserInfo(id).then((user) => {
-      setUser(user.data);
-      return user;
-    });
-    const getTransactions = service.getTransactions(id).then(({ data }) => {
-      setTransactions(data);
-      return data;
-    });
+    getInfo(id);
+  }, [id]);
+
+  const getInfo = (id) => {
+    const getUserInfo = service.getUserInfo(id);
+    const getTransactions = service.getTransactions(id);
     Promise.all([getUserInfo, getTransactions]).then((values) => {
+      setUser(values[0].data);
+      setTransactions(values[1].data);
       setUserNotFound(values[0].data.http_status_code === 404);
       setloadingPage(false);
     });
-  }, [id]);
-
+  };
 
   const handlerOnChangeTransaction = (inputID) => (event) => {
-    setTransactionInfo({ ...transactionInfo, [inputID]: event.target.value });
+    const { value } = event.target;
+    if (inputID === 'amount') {
+      setErrorAmount(parseFloat(value) === 0);
+    }
+    setTransactionInfo({ ...transactionInfo, [inputID]: value });
   };
 
   const handlerAddTransation = (event) => {
     event.preventDefault();
+    setMessage('');
     setAddTransactionLoad(true);
     service
       .addTransaction(transactionInfo)
@@ -66,26 +75,33 @@ const UserCardPage = (props) => {
           answer.statusText === 'OK' &&
           answer.status === 200
         ) {
-          console.log('добавлен');
-          service.getTransactions(id).then(({ data }) => {
-            setTransactions(data);
-          });
+          setMessageType('success');
+          setMessage('Операция выполнена');
+          getInfo(id);
         } else {
-          console.log('ошибка', answer);
+          setMessageType('error');
+          setMessage(answer);
         }
       })
       .catch((data) => {
         setAddTransactionLoad(false);
-        console.log('произошла ошибка', data);
+        setMessageType('error');
+        setMessage('Ошибка: ' + data);
       });
   };
 
   return (
     <div style={{ padding: '20px' }}>
       {loadingPage && <Loader color="blue" fullscreen={true} centered={true} />}
-      {!loadingPage && userNotFound && <div>Пользователя с таким id не существует</div>}
+      {!loadingPage && userNotFound && (
+        <>
+          <div>Пользователя с таким id не существует</div>
+          <Link to="/">Вернуться к списку пользователей</Link>
+        </>
+      )}
       {!loadingPage && !userNotFound && (
         <>
+          <div style={{ marginBottom: '20px' }}><Link to="/" >Вернуться к списку пользователей</Link></div>
           <UserCard user={user} isAdding={false} />
           <Paper style={{ padding: '20px', marginBottom: '20px' }}>
             <Collapse
@@ -109,6 +125,7 @@ const UserCardPage = (props) => {
                         value={transactionInfo.amount}
                         type="number"
                         required
+                        error={errorAmount}
                       />
                     </FormControl>
                   </Grid>
@@ -130,6 +147,7 @@ const UserCardPage = (props) => {
                       appearance="secondary"
                       fetching={addTransactionLoad}
                       style={{ height: '100%' }}
+                      disabled={errorAmount}
                     >
                       Добавить
                     </Button>
@@ -150,7 +168,10 @@ const UserCardPage = (props) => {
               tableClassName="user-table"
               renderEmptyMessage={() => <div>Нет данных</div>}
               renderRow={(data) => {
-                data.row['date'] = new Date(data.row['date']).toLocaleDateString("ru-RU");
+                const date = new Date(data.row['date']);
+                data.row['date'] = `${date.toLocaleDateString('ru-RU')} ${date.toLocaleTimeString(
+                  'ru-RU'
+                )}`;
                 return (
                   <tr className={data.className} key={data.row.operation_id}>
                     {data.columns.map((column, index) => (
@@ -167,6 +188,7 @@ const UserCardPage = (props) => {
               }}
             />
           </Paper>
+          <Notification message={message} messageType={messageType} />
         </>
       )}
     </div>

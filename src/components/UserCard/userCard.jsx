@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, TextField, Paper, Typography, FormControl, Snackbar } from '@material-ui/core';
-import { Button, Collapse, Icon } from 'xsolla-uikit';
+import { Grid, TextField, Paper, Typography, FormControl } from '@material-ui/core';
+import { Button, Collapse } from 'xsolla-uikit';
 
-import { ReactComponent as CloseIcon } from '../../static/times-circle-solid.svg';
 import './userCard.css';
+import Notification from '../Notification/notification';
 import { Service } from '../../Service';
 const service = new Service();
 
@@ -33,7 +33,6 @@ const UserCard = ({ isAdding, user }) => {
 
   const [loadButton, setLoadButton] = useState(false);
   const [message, setMessage] = useState('');
-  const [openMessage, setOpenMessage] = useState(false);
   const [messageType, setMessageType] = useState('success');
 
   useEffect(() => {
@@ -66,10 +65,6 @@ const UserCard = ({ isAdding, user }) => {
       .catch((data) => {
         setLoadButton(false);
       });
-  };
-
-  const handleClose = () => {
-    setOpenMessage(false);
   };
 
   const processAnswer = (answer) => {
@@ -117,7 +112,6 @@ const UserCard = ({ isAdding, user }) => {
       setMessageType('error');
       setMessage('Ошибка: ' + answer);
     }
-    setOpenMessage(true);
     setLoadButton(false);
   };
 
@@ -240,7 +234,6 @@ const UserCard = ({ isAdding, user }) => {
                 <Button
                   type="submit"
                   appearance="secondary"
-                  // onClick={handlerSubmitClick}
                   fetching={loadButton}
                   disabled={errorFields.email}
                 >
@@ -251,18 +244,7 @@ const UserCard = ({ isAdding, user }) => {
           </form>
         </Collapse>
       </Paper>
-      <Snackbar
-        open={openMessage}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        message={message}
-        className={messageType}
-        action={<CloseIcon width="16px" onClick={handleClose} />}
-      />
+     <Notification message={message} messageType={messageType}/>
     </>
   );
 };

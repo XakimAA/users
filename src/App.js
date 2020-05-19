@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect
 } from "react-router-dom";
 
 
@@ -18,9 +19,10 @@ function App() {
           <Route path="/usercard/:id">
             <UserCardPage />
           </Route>
-          <Route path="/users">
+          <Route exact path="/">
             <UserList/>
           </Route>
+          <Redirect to="/" />
         </Switch>
     </div>
     </Router>
