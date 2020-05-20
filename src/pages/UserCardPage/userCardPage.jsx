@@ -40,7 +40,7 @@ const UserCardPage = (props) => {
   });
 
   const [loadingPage, setloadingPage] = useState(true);
-  const [userNotFound, setUserNotFound] = useState(true);
+  const [userNotFound, setUserNotFound] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [addTransactionLoad, setAddTransactionLoad] = useState(false);
   const [errorAmount, setErrorAmount] = useState(false);
@@ -49,19 +49,20 @@ const UserCardPage = (props) => {
   const [loadingTransaction, setLoadingTransaction] = useState(false);
 
   useEffect(() => {
-    getInfo(id);
-  }, [id]);
-
-  const getInfo = (id) => {
-    const getUserInfo = service.getUserInfo(id);
-    const getTransactions = service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo);
-    Promise.all([getUserInfo, getTransactions]).then((values) => {
-      setUser(values[0].data);
-      setTransactions(values[1].data);
-      setUserNotFound(values[0].data.http_status_code === 404);
+    service.getUserInfo(id).then((answer)=>{
+      setUser(answer.data);
       setloadingPage(false);
-    });
-  };
+      setLoadingTransaction(true);
+      if (answer.data.http_status_code === 404) {
+        console.log(answer.data.http_status_code);
+        return setUserNotFound(true);
+      }
+      return service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo);
+    }).then((answer)=>{
+      setTransactions(answer.data);
+      setLoadingTransaction(false);
+    })
+  }, [id]);
 
   const handlerOnChangeTransaction = (inputID) => (event) => {
     const { value } = event.target;
@@ -87,7 +88,7 @@ const UserCardPage = (props) => {
         ) {
           setMessageType('success');
           setMessage('Операция выполнена');
-          getInfo(id);
+          setUser({...user, balance: answer.data.amount});
         } else {
           setMessageType('error');
           setMessage(answer);
@@ -115,7 +116,7 @@ const UserCardPage = (props) => {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
+    <>
       {loadingPage && <Loader color="blue" fullscreen={true} centered={true} />}
       {!loadingPage && userNotFound && (
         <>
@@ -125,18 +126,18 @@ const UserCardPage = (props) => {
       )}
       {!loadingPage && !userNotFound && (
         <>
-          <div style={{ marginBottom: '20px' }}>
+          <div className="title">
             <Link to="/">Вернуться к списку пользователей</Link>
           </div>
           <UserCard user={user} isAdding={false} />
-          <Paper style={{ padding: '20px', marginBottom: '20px' }}>
+          <Paper className="paper">
             <Collapse
               isOpened={false}
               staticElements={1}
               collapsedLabel={() => `Ввести данные`}
               expandedLabel={() => 'Спрятать'}
             >
-              <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
+              <Typography component="p" align="left" className="title">
                 Добавить операцию
               </Typography>
               <form onSubmit={handlerAddTransation}>
@@ -181,11 +182,11 @@ const UserCardPage = (props) => {
               </form>
             </Collapse>
           </Paper>
-          <Paper style={{ marginBottom: '20px' }}>
-            <Typography component="p" align="left" style={{ padding: '20px' }}>
+          <Paper>
+            <Typography component="p" align="left" className="title__table">
               Все операции пользователя
             </Typography>
-            <Grid container spacing={2} style={{ padding: '0 20px 20px 20px' }} className="datePicker">
+            <Grid container spacing={2} className="datePicker">
               <Grid item xs={12} md={5}>
                 <TextField
                   id="dateFrom"
@@ -232,7 +233,7 @@ const UserCardPage = (props) => {
               compact={true}
               className="table-wrapper"
               tableClassName="user-table"
-              fetching={loadingTransaction}
+              fetching={loadingTransaction || addTransactionLoad}
               renderEmptyMessage={() => <div>Нет данных</div>}
               renderRow={(data) => {
                 const date = new Date(data.row['date']);
@@ -258,7 +259,7 @@ const UserCardPage = (props) => {
           <Notification message={message} messageType={messageType} />
         </>
       )}
-    </div>
+    </>
   );
 };
 

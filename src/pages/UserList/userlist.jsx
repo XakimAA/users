@@ -103,14 +103,19 @@ const UserList = (props) => {
     else setCurrentPage(1);
   };
 
+  // const updateTable = () => {
+  //   if (currentPage === 1) getUsers();
+  //   else setCurrentPage(1);
+  // };
+
   return (
-    <div style={{ padding: '20px' }} >
-      <UserCard isAdding />
-      <Paper style={{ marginBottom: '20px', paddingBottom: '20px' }}>
-        <Typography component="p" align="left" style={{ padding: '20px' }}>
+    <>
+      <UserCard isAdding updateTable={getUsers} />
+      <Paper className="paper">
+        <Typography component="p" align="left" className="title">
           Фильтры
         </Typography>
-        <Grid container spacing={2} style={{ padding: '0px 20px' }}>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
             <FormControl fullWidth>
               <TextField
@@ -145,14 +150,13 @@ const UserList = (props) => {
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={2} align="right">
+          <Grid item xs={12} md={2} align="right" className="button__height">
             <Button
               type="submit"
               appearance="secondary"
-              style={{ height: '100%' }}
               onClick={handlerSearchClick}
               disabled={errorEmail}
-              fetching={loadSearching}  
+              fetching={loadSearching}
             >
               Поиск
             </Button>
@@ -160,10 +164,10 @@ const UserList = (props) => {
         </Grid>
       </Paper>
       <Paper>
-        <Typography component="p" align="left" style={{ padding: '20px' }}>
+        <Typography component="p" align="left" className="title__table">
           Все пользователи
         </Typography>
-        <Grid container spacing={2} style={{ marginBottom: '10px', paddingLeft: '20px' }}>
+        <Grid container spacing={2} >
           <Grid item xs={12}>
             <Pagination
               current={currentPage}
@@ -209,7 +213,7 @@ const UserList = (props) => {
           }}
         />
       </Paper>
-    </div>
+    </>
   );
 };
 

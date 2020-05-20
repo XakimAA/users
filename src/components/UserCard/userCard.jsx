@@ -7,7 +7,7 @@ import Notification from '../Notification/notification';
 import { Service } from '../../Service';
 const service = new Service();
 
-const UserCard = ({ isAdding, user }) => {
+const UserCard = ({ isAdding, user, updateTable }) => {
   const formTitle = isAdding ? 'Добавление пользователя' : 'Информация о пользователе';
   const collapsePanelText = isAdding ? 'Ввести данные' : 'Показать';
   const actionButtonText = isAdding ? 'Добавить' : 'Изменить';
@@ -95,15 +95,17 @@ const UserCard = ({ isAdding, user }) => {
 
       if (answer.data && answer.data.message) error += answer.data.message;
       if (error === '') {
-        if (isAdding)
+        setMessageType('success');
+        setMessage(isAdding ? 'Пользователь добавлен' : 'Пользователь изменен');
+        if (isAdding) {
           setValues({
             user_id: '',
             user_name: '',
             user_custom: '',
             email: '',
           });
-        setMessageType('success');
-        setMessage(isAdding ? 'Пользователь добавлен' : 'Пользователь изменен');
+          if (typeof updateTable === "function") updateTable()
+        }
       } else {
         setMessageType('error');
         setMessage(error);
@@ -117,14 +119,14 @@ const UserCard = ({ isAdding, user }) => {
 
   return (
     <>
-      <Paper style={{ padding: '20px', marginBottom: '20px' }}>
+      <Paper className="paper">
         <Collapse
           isOpened={!isAdding}
           staticElements={1}
           collapsedLabel={() => collapsePanelText}
           expandedLabel={() => 'Спрятать'}
         >
-          <Typography component="p" align="left" style={{ marginBottom: '20px' }}>
+          <Typography component="p" align="left" className="title">
             {formTitle}
           </Typography>
           <form onSubmit={handlerSubmitClick}>

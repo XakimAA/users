@@ -11,3 +11,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.paper {
+  padding: 20px;
+  margin-bottom:20px;
+}
+
+.button__height > button {
+  height: 100% !important
+}
+
+.title {
+  margin-bottom: 20px !important;
+}
+
+.title__table {
+  padding: 20px;
+}
