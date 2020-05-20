@@ -1,26 +1,27 @@
 {
   "files": {
-    "main.css": "/users/static/css/main.228cb4cb.chunk.css",
-    "main.js": "/users/static/js/main.4fe86baf.chunk.js",
-    "main.js.map": "/users/static/js/main.4fe86baf.chunk.js.map",
+    "main.css": "/users/static/css/main.bb0b275d.chunk.css",
+    "main.js": "/users/static/js/main.ce80a905.chunk.js",
+    "main.js.map": "/users/static/js/main.ce80a905.chunk.js.map",
     "runtime-main.js": "/users/static/js/runtime-main.8b58aa93.js",
     "runtime-main.js.map": "/users/static/js/runtime-main.8b58aa93.js.map",
-    "static/css/2.02ea2177.chunk.css": "/users/static/css/2.02ea2177.chunk.css",
-    "static/js/2.09a5ed14.chunk.js": "/users/static/js/2.09a5ed14.chunk.js",
-    "static/js/2.09a5ed14.chunk.js.map": "/users/static/js/2.09a5ed14.chunk.js.map",
+    "static/css/2.f73d3469.chunk.css": "/users/static/css/2.f73d3469.chunk.css",
+    "static/js/2.dd089016.chunk.js": "/users/static/js/2.dd089016.chunk.js",
+    "static/js/2.dd089016.chunk.js.map": "/users/static/js/2.dd089016.chunk.js.map",
     "index.html": "/users/index.html",
-    "precache-manifest.84e99d3d33b327414ccf8e19408c14f9.js": "/users/precache-manifest.84e99d3d33b327414ccf8e19408c14f9.js",
+    "precache-manifest.c3afb7b6ea69227178acf84750e7324d.js": "/users/precache-manifest.c3afb7b6ea69227178acf84750e7324d.js",
     "service-worker.js": "/users/service-worker.js",
-    "static/css/2.02ea2177.chunk.css.map": "/users/static/css/2.02ea2177.chunk.css.map",
-    "static/css/main.228cb4cb.chunk.css.map": "/users/static/css/main.228cb4cb.chunk.css.map",
-    "static/js/2.09a5ed14.chunk.js.LICENSE.txt": "/users/static/js/2.09a5ed14.chunk.js.LICENSE.txt",
-    "static/media/style.css": "/users/static/media/xsolla-pattern.e822c496.svg"
+    "static/css/2.f73d3469.chunk.css.map": "/users/static/css/2.f73d3469.chunk.css.map",
+    "static/css/main.bb0b275d.chunk.css.map": "/users/static/css/main.bb0b275d.chunk.css.map",
+    "static/js/2.dd089016.chunk.js.LICENSE.txt": "/users/static/js/2.dd089016.chunk.js.LICENSE.txt",
+    "static/media/style.css": "/users/static/media/xsolla-pattern.e822c496.svg",
+    "static/media/times-circle-solid.bb7daa97.svg": "/users/static/media/times-circle-solid.bb7daa97.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.8b58aa93.js",
-    "static/css/2.02ea2177.chunk.css",
-    "static/js/2.09a5ed14.chunk.js",
-    "static/css/main.228cb4cb.chunk.css",
-    "static/js/main.4fe86baf.chunk.js"
+    "static/css/2.f73d3469.chunk.css",
+    "static/js/2.dd089016.chunk.js",
+    "static/css/main.bb0b275d.chunk.css",
+    "static/js/main.ce80a905.chunk.js"
   ]
 }
