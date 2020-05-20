@@ -1,0 +1,7 @@
+.datePicker .MuiFormControl-root {
+    width: 100% !important;
+}
+
+.button__height > button {
+    height: 100% !important
+}

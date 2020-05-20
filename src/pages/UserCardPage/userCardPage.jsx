@@ -5,6 +5,7 @@ import { Table, Button, Collapse, Loader } from 'xsolla-uikit';
 
 import UserCard from '../../components/UserCard/userCard';
 import Notification from '../../components/Notification/notification';
+import './userCardPage.css';
 import { Service } from '../../Service';
 const service = new Service();
 
@@ -29,6 +30,14 @@ const UserCardPage = (props) => {
     amount: '',
     comment: '',
   });
+  const [errorDate, setErrorDate] = useState({
+    dateFrom:false,
+    dateTo:false
+  });
+  const [valueDate, setValueDate] = useState({
+    dateFrom:"2017-05-24T10:30",
+    dateTo:"2020-05-24T10:30"
+  });
 
   const [loadingPage, setloadingPage] = useState(true);
   const [userNotFound, setUserNotFound] = useState(true);
@@ -37,6 +46,7 @@ const UserCardPage = (props) => {
   const [errorAmount, setErrorAmount] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('success');
+  const [loadingTransaction, setLoadingTransaction] = useState(false);
 
   useEffect(() => {
     getInfo(id);
@@ -44,7 +54,7 @@ const UserCardPage = (props) => {
 
   const getInfo = (id) => {
     const getUserInfo = service.getUserInfo(id);
-    const getTransactions = service.getTransactions(id);
+    const getTransactions = service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo);
     Promise.all([getUserInfo, getTransactions]).then((values) => {
       setUser(values[0].data);
       setTransactions(values[1].data);
@@ -90,6 +100,20 @@ const UserCardPage = (props) => {
       });
   };
 
+  const handlerDate = (inputID) => (event) => {
+    const { value } = event.target;
+    setErrorDate({...errorDate, [inputID]: value.length === 0});
+    setValueDate({ ...valueDate, [inputID]: value });
+  };
+
+  const heandlerSearchTransaction = () => {
+    setLoadingTransaction(true);
+    service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo).then((answer)=>{
+      setTransactions(answer.data);
+      setLoadingTransaction(false);
+    })
+  }
+
   return (
     <div style={{ padding: '20px' }}>
       {loadingPage && <Loader color="blue" fullscreen={true} centered={true} />}
@@ -101,7 +125,9 @@ const UserCardPage = (props) => {
       )}
       {!loadingPage && !userNotFound && (
         <>
-          <div style={{ marginBottom: '20px' }}><Link to="/" >Вернуться к списку пользователей</Link></div>
+          <div style={{ marginBottom: '20px' }}>
+            <Link to="/">Вернуться к списку пользователей</Link>
+          </div>
           <UserCard user={user} isAdding={false} />
           <Paper style={{ padding: '20px', marginBottom: '20px' }}>
             <Collapse
@@ -141,12 +167,11 @@ const UserCardPage = (props) => {
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} md={2} align="right">
+                  <Grid item xs={12} md={2} align="right" className="button__height">
                     <Button
                       type="submit"
                       appearance="secondary"
                       fetching={addTransactionLoad}
-                      style={{ height: '100%' }}
                       disabled={errorAmount}
                     >
                       Добавить
@@ -160,12 +185,54 @@ const UserCardPage = (props) => {
             <Typography component="p" align="left" style={{ padding: '20px' }}>
               Все операции пользователя
             </Typography>
+            <Grid container spacing={2} style={{ padding: '0 20px 20px 20px' }} className="datePicker">
+              <Grid item xs={12} md={5}>
+                <TextField
+                  id="dateFrom"
+                  label="Дата с"
+                  type="datetime-local"
+                  defaultValue={valueDate.dateFrom}
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={handlerDate("dateFrom")}
+                  error={errorDate.dateFrom}
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  id="dateTo"
+                  label="Дата по"
+                  type="datetime-local"
+                  defaultValue={valueDate.dateTo}
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={handlerDate("dateTo")}
+                  error={errorDate.dateTo}
+                />
+              </Grid>
+              <Grid item xs={12} md={2} align="right" className="button__height">
+                <Button
+                  type="submit"
+                  appearance="secondary"
+                  fetching={loadingTransaction}
+                  disabled={errorDate.dateFrom || errorDate.dateTo}
+                  onClick={heandlerSearchTransaction}
+                >
+                  Поиск
+                </Button>
+              </Grid>
+            </Grid>
             <Table
               columns={columns}
               rows={transactions}
               compact={true}
               className="table-wrapper"
               tableClassName="user-table"
+              fetching={loadingTransaction}
               renderEmptyMessage={() => <div>Нет данных</div>}
               renderRow={(data) => {
                 const date = new Date(data.row['date']);

@@ -7,9 +7,8 @@ import {
   Redirect
 } from "react-router-dom";
 
-
-import UserCardPage from './pages/UserCardPage';
-import UserList from './pages/UserList';
+import UserCardPage from './pages/UserCardPage/userCardPage';
+import UserList from './pages/UserList/userlist';
 
 function App() {
   return (

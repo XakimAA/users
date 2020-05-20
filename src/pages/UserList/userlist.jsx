@@ -79,7 +79,6 @@ const UserList = (props) => {
   };
 
   const handlerTableClick = (param) => {
-    console.log(param);
     history.push(`/usercard/${param}`);
   };
 
@@ -105,7 +104,7 @@ const UserList = (props) => {
   };
 
   return (
-    <div style={{ padding: '20px' }} className="page">
+    <div style={{ padding: '20px' }} >
       <UserCard isAdding />
       <Paper style={{ marginBottom: '20px', paddingBottom: '20px' }}>
         <Typography component="p" align="left" style={{ padding: '20px' }}>

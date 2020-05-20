@@ -22,11 +22,11 @@ export class Service {
 
   getTransactions(
     userID,
-    date_from = '1970-12-28T15%3A00%3A00Z',
-    date_to = '2030-12-28T15%3A10%3A00Z'
+    date_from,
+    date_to
   ) {
     return axios.get(
-      `${axios.defaults.baseURL}/users/${userID}/transactions?datetime_from=${date_from}&datetime_to=${date_to}`
+      `${axios.defaults.baseURL}/users/${userID}/transactions?datetime_from=${date_from +":00Z"}&datetime_to=${date_to+":00Z"}`
     );
   }
 
