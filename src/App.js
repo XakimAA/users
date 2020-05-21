@@ -18,10 +18,10 @@ function App() {
           <Route path="/usercard/:id">
             <UserCardPage />
           </Route>
-          <Route exact path="/">
+          <Route path="/users">
             <UserList/>
           </Route>
-          <Redirect to="/" />
+          <Redirect to="/users" />
         </Switch>
     </div>
     </Router>

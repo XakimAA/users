@@ -1,8 +1,7 @@
 .datePicker {
-padding: 0 20px 20px 20px !important;
+  padding: 0 20px 20px 20px !important;
 }
 
 .datePicker .MuiFormControl-root {
-    width: 100% !important;
-  }
-  
+  width: 100% !important;
+}

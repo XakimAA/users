@@ -42,17 +42,17 @@
 }
 
 .xsui-table-cell__text {
-    white-space: nowrap; 
-    text-overflow: ellipsis;
-    width: 100%;
-    overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+  overflow: hidden;
 }
 
 .xsui-table-head-cell__wrapper {
-    padding-right: 0;
+  padding-right: 0;
 }
 
-.pagination{
+.pagination {
   margin-bottom: 20px;
   margin-left: 20px;
 }

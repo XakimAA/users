@@ -104,7 +104,7 @@ const UserCard = ({ isAdding, user, updateTable }) => {
             user_custom: '',
             email: '',
           });
-          if (typeof updateTable === "function") updateTable()
+          if (typeof updateTable === 'function') updateTable();
         }
       } else {
         setMessageType('error');
@@ -246,7 +246,7 @@ const UserCard = ({ isAdding, user, updateTable }) => {
           </form>
         </Collapse>
       </Paper>
-     <Notification message={message} messageType={messageType}/>
+      <Notification message={message} messageType={messageType} />
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { Grid, Paper, Typography, TextField, FormControl } from '@material-ui/core';
 import { Table, Button } from 'xsolla-uikit';
 import Pagination from 'xsolla-uikit/lib/pagination'; //отсутствует в общем списке
@@ -103,11 +103,6 @@ const UserList = (props) => {
     else setCurrentPage(1);
   };
 
-  // const updateTable = () => {
-  //   if (currentPage === 1) getUsers();
-  //   else setCurrentPage(1);
-  // };
-
   return (
     <>
       <UserCard isAdding updateTable={getUsers} />
@@ -167,7 +162,7 @@ const UserList = (props) => {
         <Typography component="p" align="left" className="title__table">
           Все пользователи
         </Typography>
-        <Grid container spacing={2} >
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <Pagination
               current={currentPage}

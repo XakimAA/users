@@ -31,12 +31,12 @@ const UserCardPage = (props) => {
     comment: '',
   });
   const [errorDate, setErrorDate] = useState({
-    dateFrom:false,
-    dateTo:false
+    dateFrom: false,
+    dateTo: false,
   });
   const [valueDate, setValueDate] = useState({
-    dateFrom:"2017-05-24T10:30",
-    dateTo:"2020-05-24T10:30"
+    dateFrom: '2017-05-24T10:30',
+    dateTo: '2020-05-24T10:30',
   });
 
   const [loadingPage, setloadingPage] = useState(true);
@@ -49,20 +49,32 @@ const UserCardPage = (props) => {
   const [loadingTransaction, setLoadingTransaction] = useState(false);
 
   useEffect(() => {
-    service.getUserInfo(id).then((answer)=>{
-      setUser(answer.data);
-      setloadingPage(false);
-      setLoadingTransaction(true);
-      if (answer.data.http_status_code === 404) {
-        console.log(answer.data.http_status_code);
-        return setUserNotFound(true);
-      }
-      return service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo);
-    }).then((answer)=>{
-      setTransactions(answer.data);
-      setLoadingTransaction(false);
-    })
+    getInfo(id);
   }, [id]);
+
+  const getInfo = (id) => {
+    service
+      .getUserInfo(id)
+      .then((answer) => {
+        setUser(answer.data);
+        setloadingPage(false);
+
+        if (answer.data.http_status_code === 404) {
+          setUserNotFound(true);
+          return false;
+        }
+        return true;
+      })
+      .then((answer) => {
+        setLoadingTransaction(true);
+        if (answer) {
+          service.getTransactions(id, valueDate.dateFrom, valueDate.dateTo).then((answer) => {
+            setTransactions(answer.data);
+            setLoadingTransaction(false);
+          });
+        }
+      });
+  };
 
   const handlerOnChangeTransaction = (inputID) => (event) => {
     const { value } = event.target;
@@ -88,10 +100,11 @@ const UserCardPage = (props) => {
         ) {
           setMessageType('success');
           setMessage('Операция выполнена');
-          setUser({...user, balance: answer.data.amount});
+          getInfo(id);
+          setTransactionInfo({ ...transactionInfo, amount: '', comment: '' });
         } else {
           setMessageType('error');
-          setMessage(answer);
+          setMessage(answer.data.message);
         }
       })
       .catch((data) => {
@@ -103,24 +116,24 @@ const UserCardPage = (props) => {
 
   const handlerDate = (inputID) => (event) => {
     const { value } = event.target;
-    setErrorDate({...errorDate, [inputID]: value.length === 0});
+    setErrorDate({ ...errorDate, [inputID]: value.length === 0 });
     setValueDate({ ...valueDate, [inputID]: value });
   };
 
   const heandlerSearchTransaction = () => {
     setLoadingTransaction(true);
-    service.getTransactions(id,valueDate.dateFrom,valueDate.dateTo).then((answer)=>{
+    service.getTransactions(id, valueDate.dateFrom, valueDate.dateTo).then((answer) => {
       setTransactions(answer.data);
       setLoadingTransaction(false);
-    })
-  }
+    });
+  };
 
   return (
     <>
       {loadingPage && <Loader color="blue" fullscreen={true} centered={true} />}
       {!loadingPage && userNotFound && (
         <>
-          <div>Пользователя с таким id не существует</div>
+          <div className="xsui-typography--title">Пользователя с таким id не существует</div>
           <Link to="/">Вернуться к списку пользователей</Link>
         </>
       )}
@@ -197,7 +210,7 @@ const UserCardPage = (props) => {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  onChange={handlerDate("dateFrom")}
+                  onChange={handlerDate('dateFrom')}
                   error={errorDate.dateFrom}
                 />
               </Grid>
@@ -211,7 +224,7 @@ const UserCardPage = (props) => {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  onChange={handlerDate("dateTo")}
+                  onChange={handlerDate('dateTo')}
                   error={errorDate.dateTo}
                 />
               </Grid>
