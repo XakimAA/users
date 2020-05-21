@@ -11,7 +11,7 @@ const service = new Service();
 
 const columns = [
   { id: 'operation_id', name: 'ID', fieldGetter: 'operation_id' },
-  { id: 'date', name: 'дата', fieldGetter: 'date' },
+  { id: 'date', name: 'дата', fieldGetter: 'dateFormatted' },
   { id: 'transaction_type', name: 'тип транзакции', fieldGetter: 'transaction_type' },
   { id: 'amount', name: 'сумма операции', fieldGetter: 'amount' },
   { id: 'user_balance', name: 'баланс', fieldGetter: 'user_balance' },
@@ -66,12 +66,8 @@ const UserCardPage = (props) => {
         return true;
       })
       .then((answer) => {
-        setLoadingTransaction(true);
         if (answer) {
-          service.getTransactions(id, valueDate.dateFrom, valueDate.dateTo).then((answer) => {
-            setTransactions(answer.data);
-            setLoadingTransaction(false);
-          });
+          getTransactions();
         }
       });
   };
@@ -120,9 +116,15 @@ const UserCardPage = (props) => {
     setValueDate({ ...valueDate, [inputID]: value });
   };
 
-  const heandlerSearchTransaction = () => {
+  const getTransactions = () => {
     setLoadingTransaction(true);
     service.getTransactions(id, valueDate.dateFrom, valueDate.dateTo).then((answer) => {
+      answer.data.map((transaction) => {
+        const date = new Date(transaction.date);
+        transaction.dateFormatted = `${date.toLocaleDateString('ru-RU')} ${date.toLocaleTimeString(
+          'ru-RU'
+        )}`;
+      });
       setTransactions(answer.data);
       setLoadingTransaction(false);
     });
@@ -234,7 +236,7 @@ const UserCardPage = (props) => {
                   appearance="secondary"
                   fetching={loadingTransaction}
                   disabled={errorDate.dateFrom || errorDate.dateTo}
-                  onClick={heandlerSearchTransaction}
+                  onClick={getTransactions}
                 >
                   Поиск
                 </Button>
@@ -249,10 +251,6 @@ const UserCardPage = (props) => {
               fetching={loadingTransaction || addTransactionLoad}
               renderEmptyMessage={() => <div>Нет данных</div>}
               renderRow={(data) => {
-                const date = new Date(data.row['date']);
-                data.row['date'] = `${date.toLocaleDateString('ru-RU')} ${date.toLocaleTimeString(
-                  'ru-RU'
-                )}`;
                 return (
                   <tr className={data.className} key={data.row.operation_id}>
                     {data.columns.map((column, index) => (
