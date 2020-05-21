@@ -142,6 +142,7 @@ const UserList = (props) => {
                 onChange={handlerFilterChange('size')}
                 value={filters.size}
                 type="number"
+                inputProps={{ min: "0", max: "10", step: "1" }}
               />
             </FormControl>
           </Grid>
@@ -183,7 +184,8 @@ const UserList = (props) => {
           fetching={loadSearching}
           renderEmptyMessage={() => <div>Нет данных</div>}
           renderRow={(data) => {
-            data.row.rowIndex = data.rowIndex + 1;
+            data.row.rowIndex = (currentPage - 1)*perPage + data.rowIndex + 1;
+            
             data.row['register_date'] = new Date(data.row['register_date']).toLocaleDateString(
               'ru-RU'
             );
